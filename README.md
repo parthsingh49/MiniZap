@@ -1,16 +1,72 @@
-# React + Vite
+# MiniZap 
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+MiniZap is a full-stack workflow automation platform inspired by tools like Zapier. It allows users to visually design automation workflows using a node-based workflow builder.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Visual workflow builder using React Flow
+- Trigger and action based workflow design
+- User registration and login
+- JWT-based authentication
+- Google OAuth authentication
+- GitHub OAuth authentication
+- user DashBoard
+- Database Integration
+- REST API built with Express.js
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
+- React
+- Vite
+- React Router
+- React Flow
+- Tailwind CSS
+- Axios
 
-## Expanding the Oxlint configuration
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT
+- bcrypt
+- Passport.js
+- Google OAuth
+- GitHub OAuth
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## How It Works
+
+1. User registers or logs in.
+2. Authentication is handled using JWT or OAuth.
+3. Authenticated users are redirected to the dashboard.
+4. Users can access the visual workflow builder.
+5. Workflows are represented using connected trigger and action nodes.
+6. The backend provides authentication APIs and communicates with MongoDB.
+
+## Project Structure
+
+MiniZap/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── api/
+│   └── data/
+│
+├── server/
+│   └── src/
+│       ├── config/
+│       ├── controllers/
+│       ├── middleware/
+│       ├── models/
+│       └── routes/
+│
+├── public/
+├── package.json
+└── README.md
+
+## Contributors
+
+- Parth Singh
+- Rudra Saxena
+- Sheersh Shankdhaar
