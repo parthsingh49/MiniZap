@@ -46,6 +46,7 @@ MiniZap is a full-stack workflow automation platform inspired by tools like Zapi
 
 ## Project Structure
 
+```text
 MiniZap/
 ├── src/
 │   ├── components/
@@ -64,6 +65,7 @@ MiniZap/
 ├── public/
 ├── package.json
 └── README.md
+```
 
 ## Contributors
 
