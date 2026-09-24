@@ -1,297 +1,295 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../api/axios";
 
-import {
-  Workflow,
-  Plus,
-  Settings,
-  LogOut,
-  User
-} from "lucide-react";
-
-
-function Dashboard(){
-
+function Dashboard() {
   const navigate = useNavigate();
 
+  const [theme, setTheme] = useState(
+    localStorage.getItem("theme") || "dark"
+  );
 
-  const [user,setUser] = useState(null);
+  const [workflows, setWorkflows] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // =========================
+  // THEME
+  // =========================
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setTheme(localStorage.getItem("theme") || "dark");
+    };
 
-  useEffect(()=>{
+    window.addEventListener("storage", handleStorageChange);
 
-
-    const token =
-    localStorage.getItem("token");
-
-
-    if(!token){
-
-      navigate("/login");
-      return;
-
-    }
-
-
-
-    const storedUser =
-    localStorage.getItem("user");
-
-
-    if(storedUser){
-
-      setUser(
-        JSON.parse(storedUser)
+    return () => {
+      window.removeEventListener(
+        "storage",
+        handleStorageChange
       );
+    };
+  }, []);
 
-    }
+  // =========================
+  // FETCH WORKFLOWS
+  // =========================
 
+  useEffect(() => {
+    const fetchWorkflows = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-  },[]);
+        if (!token) {
+          navigate("/login");
+          return;
+        }
 
+        const response = await API.get("/workflows", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
+        setWorkflows(response.data);
+      } catch (error) {
+        console.log(
+          "Dashboard Error:",
+          error.response?.data || error
+        );
 
+        if (error.response?.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchWorkflows();
+  }, [navigate]);
 
-  const logout = ()=>{
+  const user = JSON.parse(
+    localStorage.getItem("user") || "{}"
+  );
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const isDark = theme === "dark";
 
-    navigate("/login");
+  // =========================
+  // THEME CLASSES
+  // =========================
 
-  };
+  const pageClass = isDark
+    ? "bg-gray-950 text-white"
+    : "bg-gray-100 text-gray-900";
 
+  const cardClass = isDark
+    ? "bg-gray-900 border-gray-800"
+    : "bg-white border-gray-200";
 
+  const secondaryText = isDark
+    ? "text-gray-400"
+    : "text-gray-600";
 
+  const mutedText = isDark
+    ? "text-gray-500"
+    : "text-gray-500";
+
+  // =========================
+  // UI
+  // =========================
 
   return (
+    <div
+      className={`min-h-screen transition-colors duration-300 ${pageClass}`}
+    >
+      {/* ================= HEADER ================= */}
 
-    <div className="min-h-screen bg-[#030712] text-white flex">
-
-
-      {/* Sidebar */}
-
-      <aside className="w-64 border-r border-gray-800 bg-gray-900/50 p-6">
-
-
-        <div className="flex items-center gap-3 mb-10">
-
-
-          <div className="bg-blue-600 p-2 rounded-xl">
-
-            <Workflow size={22}/>
-
-          </div>
-
-
-          <h1 className="text-xl font-bold">
+      <header
+        className={`h-16 border-b flex items-center justify-between px-8 transition-colors duration-300 ${
+          isDark
+            ? "border-gray-800 bg-gray-950"
+            : "border-gray-200 bg-white"
+        }`}
+      >
+        <div>
+          <h1 className="text-2xl font-bold text-blue-500">
             MiniZap
           </h1>
 
-
+          <p className={`text-sm ${secondaryText}`}>
+            Workflow Automation Dashboard
+          </p>
         </div>
 
-
-
-
-
-        <nav className="space-y-3">
-
-
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600">
-
-            <Workflow size={18}/>
-
-            Dashboard
-
-          </button>
-
-
-
-
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800">
-
-
-            <Settings size={18}/>
-
-            Settings
-
-
-          </button>
-
-
-
-        </nav>
-
-
-
-
-
-        <button
-
-          onClick={logout}
-
-          className="absolute bottom-6 flex items-center gap-3 text-gray-400 hover:text-white"
-
-        >
-
-          <LogOut size={18}/>
-
-          Logout
-
-
-        </button>
-
-
-
-      </aside>
-
-
-
-
-
-
-
-      {/* Main Content */}
-
-
-      <main className="flex-1 p-10">
-
-
-        {/* Header */}
-
-
-        <div className="flex justify-between items-center">
-
-
-          <div>
-
-
-            <h1 className="text-4xl font-bold">
-
-              Hello {user?.name || "there"} 👋
-
-            </h1>
-
-
-            <p className="text-gray-400 mt-2">
-
-              Create powerful automations with MiniZap
-
-            </p>
-
-
-          </div>
-
-
-
-
+        <div className="flex items-center gap-4">
+          <span className={secondaryText}>
+            Welcome, {user.name || "User"}
+          </span>
 
           <button
-
-            onClick={()=>navigate("/workflow/create")}
-
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-semibold"
-
+            onClick={() => navigate("/settings")}
+            className={`px-4 py-2 rounded-lg border transition ${
+              isDark
+                ? "border-gray-700 hover:bg-gray-800"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
           >
-
-            <Plus size={20}/>
-
-            Create Workflow
-
-
+            Settings
           </button>
 
-
-
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              navigate("/login");
+            }}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+          >
+            Logout
+          </button>
         </div>
+      </header>
 
+      {/* ================= MAIN ================= */}
 
+      <main className="max-w-7xl mx-auto px-8 py-10">
 
+        {/* WELCOME */}
 
-
-
-
-        {/* Workflow Section */}
-
-
-        <section className="mt-12">
-
-
-          <h2 className="text-2xl font-semibold mb-6">
-
-            Your Workflows
-
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold">
+            Dashboard
           </h2>
 
+          <p className={`mt-2 ${secondaryText}`}>
+            Manage and create your automated workflows.
+          </p>
+        </div>
 
+        {/* ================= CREATE ================= */}
 
+        <div
+          className={`border rounded-2xl p-6 mb-8 transition-colors duration-300 ${cardClass}`}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold">
+                Create a Workflow
+              </h3>
 
-
-
-          <div className="border border-gray-800 rounded-2xl p-10 text-center bg-gray-900/40">
-
-
-            <Workflow
-
-              size={45}
-
-              className="mx-auto text-gray-500 mb-4"
-
-            />
-
-
-
-            <h3 className="text-xl font-semibold">
-
-              No workflows yet
-
-            </h3>
-
-
-
-            <p className="text-gray-400 mt-2">
-
-              Start by creating your first automation
-
-            </p>
-
-
-
-
+              <p
+                className={`text-sm mt-1 ${secondaryText}`}
+              >
+                Build event-driven automations using
+                MiniZap.
+              </p>
+            </div>
 
             <button
-
-              onClick={()=>navigate("/workflow/create")}
-
-              className="mt-6 bg-blue-600 px-5 py-3 rounded-xl"
-
+              onClick={() => navigate("/builder")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition"
             >
-
               Create Workflow
-
-
             </button>
+          </div>
+        </div>
 
+        {/* ================= SAVED WORKFLOWS ================= */}
 
+        <div>
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-xl font-semibold">
+              Your Workflows
+            </h3>
 
+            <span
+              className={`text-sm ${secondaryText}`}
+            >
+              {workflows.length} workflow
+              {workflows.length !== 1 ? "s" : ""}
+            </span>
           </div>
 
+          {loading ? (
+            <div
+              className={`border rounded-2xl p-8 text-center ${cardClass}`}
+            >
+              <p className={secondaryText}>
+                Loading workflows...
+              </p>
+            </div>
+          ) : workflows.length === 0 ? (
+            <div
+              className={`border rounded-2xl p-10 text-center ${cardClass}`}
+            >
+              <h4 className="text-lg font-semibold">
+                No workflows yet
+              </h4>
 
-        </section>
+              <p
+                className={`mt-2 mb-5 ${secondaryText}`}
+              >
+                Create your first workflow to get
+                started.
+              </p>
 
+              <button
+                onClick={() => navigate("/builder")}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition"
+              >
+                Create Workflow
+              </button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {workflows.map((workflow) => (
+                <div
+                  key={workflow._id}
+                  className={`border rounded-2xl p-5 transition-colors duration-300 ${cardClass}`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-semibold text-lg">
+                        {workflow.name}
+                      </h4>
 
+                      <p
+                        className={`text-sm mt-1 ${mutedText}`}
+                      >
+                        {workflow.nodes?.length || 0} nodes
+                        {" • "}
+                        {workflow.edges?.length || 0} connections
+                      </p>
+                    </div>
 
+                    <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-500">
+                      {workflow.active
+                        ? "Active"
+                        : "Inactive"}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      navigate(
+                        `/builder/${workflow._id}`
+                      )
+                    }
+                    className="w-full mt-5 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition"
+                  >
+                    Open Workflow
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
-
-
     </div>
-
   );
-
 }
 
-
-export default Dashboard; 
+export default Dashboard;

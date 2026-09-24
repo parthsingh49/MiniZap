@@ -1,5 +1,4 @@
 import {
-  Zap,
   GitBranch,
   Clock,
   Database,
@@ -7,6 +6,7 @@ import {
   Bot,
   MessageCircle,
   Webhook,
+  Workflow,
 } from "lucide-react";
 
 
@@ -66,7 +66,6 @@ const actions = [
 
 function NodeCard({ item }) {
 
-
   const onDragStart = (event) => {
 
     event.dataTransfer.setData(
@@ -85,17 +84,17 @@ function NodeCard({ item }) {
       draggable
       onDragStart={onDragStart}
       className="
-      flex
-      items-center
-      gap-3
-      p-4
-      bg-gray-900
-      border
-      border-gray-800
-      rounded-lg
-      hover:border-blue-500
-      cursor-grab
-      transition
+        flex
+        items-center
+        gap-3
+        p-4
+        bg-gray-900
+        border
+        border-gray-800
+        rounded-lg
+        hover:border-blue-500
+        cursor-grab
+        transition
       "
     >
 
@@ -103,11 +102,9 @@ function NodeCard({ item }) {
         {item.icon}
       </div>
 
-
       <span>
         {item.name}
       </span>
-
 
     </div>
 
@@ -116,90 +113,140 @@ function NodeCard({ item }) {
 }
 
 
-function CanvasSidebar() {
-
+function CanvasSidebar({
+  savedWorkflows = [],
+}) {
 
   return (
 
     <aside
       className="
-      w-72
-      bg-gray-950
-      border-r
-      border-gray-800
-      p-6
-      overflow-y-auto
+        w-72
+        bg-gray-950
+        border-r
+        border-gray-800
+        p-6
+        overflow-y-auto
       "
     >
 
-
       <h2 className="text-xl font-bold mb-8">
-
         Components
-
       </h2>
 
 
-
-      {/* Triggers */}
+      {/* SAVED WORKFLOWS */}
 
       <h3 className="text-sm text-gray-400 mb-4 uppercase">
-
-        Triggers
-
+        Saved Workflows
       </h3>
 
 
-      <div className="space-y-4">
+      <div className="space-y-3">
 
-        {
-          triggers.map((node)=>(
+        {savedWorkflows.length === 0 ? (
 
-            <NodeCard
-              key={node.type}
-              item={node}
-            />
+          <div className="text-sm text-gray-500 border border-gray-800 rounded-lg p-4">
+            No saved workflows
+          </div>
+
+        ) : (
+
+          savedWorkflows.map((workflow) => (
+
+            <div
+              key={workflow._id}
+              className="
+                flex
+                items-center
+                gap-3
+                p-3
+                bg-gray-900
+                border
+                border-gray-800
+                rounded-lg
+                hover:border-blue-500
+                transition
+              "
+            >
+
+              <div className="text-green-400">
+                <Workflow size={18} />
+              </div>
+
+              <div className="min-w-0">
+
+                <p className="text-sm font-medium truncate">
+                  {workflow.name}
+                </p>
+
+                <p className="text-xs text-gray-500">
+                  {workflow.nodes?.length || 0} nodes
+                </p>
+
+              </div>
+
+            </div>
 
           ))
-        }
+
+        )}
 
       </div>
 
 
-
-
-      {/* Actions */}
+      {/* TRIGGERS */}
 
       <h3 className="
-      text-sm
-      text-gray-400
-      mt-10
-      mb-4
-      uppercase
+        text-sm
+        text-gray-400
+        mt-10
+        mb-4
+        uppercase
       ">
-
-        Actions
-
+        Triggers
       </h3>
 
 
       <div className="space-y-4">
 
+        {triggers.map((node) => (
 
-        {
-          actions.map((node)=>(
+          <NodeCard
+            key={node.type}
+            item={node}
+          />
 
-            <NodeCard
-              key={node.type}
-              item={node}
-            />
-
-          ))
-        }
-
+        ))}
 
       </div>
 
+
+      {/* ACTIONS */}
+
+      <h3 className="
+        text-sm
+        text-gray-400
+        mt-10
+        mb-4
+        uppercase
+      ">
+        Actions
+      </h3>
+
+
+      <div className="space-y-4">
+
+        {actions.map((node) => (
+
+          <NodeCard
+            key={node.type}
+            item={node}
+          />
+
+        ))}
+
+      </div>
 
     </aside>
 

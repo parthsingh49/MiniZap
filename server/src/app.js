@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import passport from "passport";
-
-
+import workflowRoutes from "./routes/workflowRoutes.js";
+import settingsRoutes from "./routes/settingsRoutes.js";
 const app = express();
 
 
@@ -30,7 +30,12 @@ app.use(
 authRoutes
 );
 
+app.use(
+  "/api/settings",
+  settingsRoutes
+);
 
+app.use("/api/workflows", workflowRoutes);
 
 app.get("/",(req,res)=>{
 

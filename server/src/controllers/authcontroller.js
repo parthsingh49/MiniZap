@@ -1,14 +1,12 @@
-import User from "../models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-
+import User from "../models/User.js";
 
 const generateToken = (user) => {
   return jwt.sign(
     {
       id: user._id,
-      email: user.email,
+      tokenVersion: user.tokenVersion || 0,
     },
     process.env.JWT_SECRET,
     {
@@ -17,26 +15,45 @@ const generateToken = (user) => {
   );
 };
 
+// ===============================
+// REGISTER
+// ===============================
 
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "Name, email and password are required",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const existingUser = await User.findOne({
+      email: normalizedEmail,
+    });
 
     if (existingUser) {
       return res.status(400).json({
-        message: "User already exists",
+        message: "User already exists with this email",
       });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name,
-      email,
+      name: name.trim(),
+      email: normalizedEmail,
       password: hashedPassword,
-      provider: "local",
+      tokenVersion: 0,
     });
 
     const token = generateToken(user);
@@ -50,46 +67,63 @@ export const register = async (req, res) => {
         email: user.email,
       },
     });
-
   } catch (error) {
-    console.log(error);
+    console.log("Register Error:", error);
 
     res.status(500).json({
-      message: "Server Error",
+      message: "Registration failed",
     });
   }
 };
 
-
+// ===============================
+// LOGIN
+// ===============================
 
 export const login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-
-    if (!user) {
+    if (!email || !password) {
       return res.status(400).json({
-        message: "Invalid Credentials",
+        message: "Email and password are required",
       });
     }
 
-    const isMatch = await bcrypt.compare(
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    if (!user.password) {
+      return res.status(400).json({
+        message:
+          "This account uses OAuth login. Please login using Google or GitHub.",
+      });
+    }
+
+    const passwordCorrect = await bcrypt.compare(
       password,
       user.password
     );
 
-    if (!isMatch) {
-      return res.status(400).json({
-        message: "Invalid Credentials",
+    if (!passwordCorrect) {
+      return res.status(401).json({
+        message: "Invalid email or password",
       });
     }
 
     const token = generateToken(user);
 
     res.status(200).json({
-      message: "Login Successful",
+      message: "Login successful",
       token,
       user: {
         id: user._id,
@@ -97,22 +131,22 @@ export const login = async (req, res) => {
         email: user.email,
       },
     });
-
   } catch (error) {
-    console.log(error);
+    console.log("Login Error:", error);
 
     res.status(500).json({
-      message: "Server Error",
+      message: "Login failed",
     });
   }
 };
 
+// ===============================
+// GET CURRENT USER
+// ===============================
 
 export const getCurrentUser = async (req, res) => {
-
   try {
-
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user._id).select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -120,40 +154,41 @@ export const getCurrentUser = async (req, res) => {
       });
     }
 
-    res.status(200).json(user);
-
+    res.status(200).json({
+      user,
+    });
   } catch (error) {
-
-    console.log(error);
+    console.log("Get Current User Error:", error);
 
     res.status(500).json({
-      message: "Server Error",
+      message: "Failed to fetch current user",
     });
-
   }
 };
+
+// ===============================
+// GOOGLE OAUTH CALLBACK
+// ===============================
 
 export const googleCallback = async (req, res) => {
   try {
-    console.log("Google Callback Hit");
-
     const token = generateToken(req.user);
 
-    const redirectUrl = `http://localhost:5173/oauth-success?token=${token}`;
-
-    console.log("Redirecting to:", redirectUrl);
-
-    return res.redirect(redirectUrl);
-
+    res.redirect(
+      `http://localhost:5173/oauth-success?token=${token}`
+    );
   } catch (error) {
-    console.error(error);
+    console.log("Google OAuth Error:", error);
 
-    return res.status(500).json({
-      message: "Google Authentication Failed",
-    });
+    res.redirect(
+      "http://localhost:5173/login?error=google"
+    );
   }
 };
 
+// ===============================
+// GITHUB OAUTH CALLBACK
+// ===============================
 
 export const githubCallback = async (req, res) => {
   try {
@@ -163,10 +198,10 @@ export const githubCallback = async (req, res) => {
       `http://localhost:5173/oauth-success?token=${token}`
     );
   } catch (error) {
-    console.log(error);
+    console.log("GitHub OAuth Error:", error);
 
-    res.status(500).json({
-      message: "GitHub Authentication Failed",
-    });
+    res.redirect(
+      "http://localhost:5173/login?error=github"
+    );
   }
 };

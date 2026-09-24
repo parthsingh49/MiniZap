@@ -1,9 +1,6 @@
-import { ArrowRight, PlayCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 function Hero() {
-  const navigate = useNavigate();
-
   return (
     <section
       id="home"
@@ -59,9 +56,6 @@ function Hero() {
 
         <div className="text-center">
 
-          {/* Badge */}
-
-         
           {/* Heading */}
 
           <h1 className="mt-8 text-6xl md:text-7xl lg:text-8xl font-extrabold leading-tight text-white">
@@ -89,30 +83,9 @@ function Hero() {
 
           </p>
 
-          {/* Buttons */}
+          {/* Button */}
 
-          <div className="mt-12 flex flex-wrap justify-center gap-5">
-
-            <button
-              onClick={() => navigate("/builder")}
-              className="
-                flex
-                items-center
-                gap-2
-                bg-blue-600
-                hover:bg-blue-700
-                px-7
-                py-3.5
-                rounded-xl
-                font-semibold
-                transition
-                shadow-lg
-                shadow-blue-600/30
-              "
-            >
-              <PlayCircle size={20} />
-              View Demo
-            </button>
+          <div className="mt-12 flex justify-center">
 
             <a
               href="#about"

@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import OAuthSuccess from "./pages/OAuthSuccess";
+import Builder from "./pages/Builder";
+import Settings from "./pages/Settings";
 function App() {
   return (
     <BrowserRouter>
@@ -18,8 +20,14 @@ function App() {
 
         <Route path="/dashboard" element={<Dashboard />} />
 
+<Route path="/builder" element={<Builder />} />
+<Route path="/builder/:id" element={<Builder />} />
 
         <Route path="/oauth-success" element={<OAuthSuccess />} />
+        <Route
+  path="/settings"
+  element={<Settings />}
+/>
       </Routes>
     </BrowserRouter>
   );

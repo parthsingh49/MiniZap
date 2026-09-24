@@ -1,158 +1,66 @@
 import express from "express";
-
-import passport from "../config/passport.js";
-
+import passport from "passport";
 
 import {
-
-register,
-
-login,
-
-getCurrentUser,
-
-googleCallback,
-
-githubCallback
-
+  register,
+  login,
+  getCurrentUser,
+  googleCallback,
+  githubCallback,
 } from "../controllers/authController.js";
 
-
-import authMiddleware from "../middleware/authMiddleware.js";
-
-
+import authMiddleware from "../middleware/authmiddleware.js";
 
 const router = express.Router();
 
+// ===============================
+// NORMAL AUTHENTICATION
+// ===============================
 
+router.post("/register", register);
 
+router.post("/login", login);
 
-// Register/Login
+router.get("/me", authMiddleware, getCurrentUser);
 
-router.post(
-"/register",
-register
-);
-
-
-router.post(
-"/login",
-login
-);
-
-
-
-
-
-
-// GOOGLE
-
+// ===============================
+// GOOGLE OAUTH
+// ===============================
 
 router.get(
-
-"/google",
-
-passport.authenticate(
-
-"google",
-
-{
-scope:[
-"profile",
-"email"
-]
-
-}
-
-)
-
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
 );
-
-
 
 router.get(
-
-"/google/callback",
-
-passport.authenticate(
-
-"google",
-
-{
-session:false
-}
-
-),
-
-googleCallback
-
+  "/google/callback",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "http://localhost:5173/login?error=google",
+  }),
+  googleCallback
 );
 
-
-
-
-
-
-
-// GITHUB
-
+// ===============================
+// GITHUB OAUTH
+// ===============================
 
 router.get(
-
-"/github",
-
-passport.authenticate(
-
-"github",
-
-{
-scope:[
-"user:email"
-]
-
-}
-
-)
-
+  "/github",
+  passport.authenticate("github", {
+    scope: ["user:email"],
+  })
 );
-
-
-
-
 
 router.get(
-
-"/github/callback",
-
-passport.authenticate(
-
-"github",
-
-{
-session:false
-}
-
-),
-
-githubCallback
-
+  "/github/callback",
+  passport.authenticate("github", {
+    session: false,
+    failureRedirect: "http://localhost:5173/login?error=github",
+  }),
+  githubCallback
 );
-
-
-
-
-
-
-router.get(
-
-"/me",
-
-authMiddleware,
-
-getCurrentUser
-
-);
-
-
 
 export default router;
