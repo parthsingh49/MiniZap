@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-
+const FRONTEND_URL = process.env.FRONTEND_URL;
 const generateToken = (user) => {
   return jwt.sign(
     {
@@ -174,9 +174,7 @@ export const googleCallback = async (req, res) => {
   try {
     const token = generateToken(req.user);
 
-    res.redirect(
-      `http://localhost:5173/oauth-success?token=${token}`
-    );
+  res.redirect(`${FRONTEND_URL}/oauth-success?token=${token}`);
   } catch (error) {
     console.log("Google OAuth Error:", error);
 
@@ -194,9 +192,7 @@ export const githubCallback = async (req, res) => {
   try {
     const token = generateToken(req.user);
 
-    res.redirect(
-      `http://localhost:5173/oauth-success?token=${token}`
-    );
+   res.redirect(`${FRONTEND_URL}/oauth-success?token=${token}`);
   } catch (error) {
     console.log("GitHub OAuth Error:", error);
 
