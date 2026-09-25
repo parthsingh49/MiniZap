@@ -7,7 +7,7 @@ import {
   getCurrentUser,
   googleCallback,
   githubCallback,
-} from "../controllers/authController.js";
+} from "../controllers/authcontroller.js";
 
 import authMiddleware from "../middleware/authmiddleware.js";
 
