@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/authRoutes.js";
+import authRoutes from "./routes/authroutes.js";
 import passport from "passport";
 import workflowRoutes from "./routes/workflowRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
