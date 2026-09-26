@@ -122,7 +122,7 @@ function Login() {
           <button className="w-full flex items-center justify-center gap-3 border border-gray-700 rounded-xl py-3 hover:bg-gray-800 transition text-white"
           
   onClick={() => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   }}
 >
             <Chrome size={20} />
@@ -133,7 +133,7 @@ function Login() {
 
           <button className="w-full flex items-center justify-center gap-3 border border-gray-700 rounded-xl py-3 hover:bg-gray-800 transition text-white"
             onClick={() => {
-    window.location.href = "http://localhost:5000/api/auth/github";
+   window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
   }}
           >
 
