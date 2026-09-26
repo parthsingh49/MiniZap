@@ -3,6 +3,9 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as GitHubStrategy } from "passport-github2";
 import User from "../models/User.js";
 
+const BACKEND_URL =
+  process.env.BACKEND_URL || "http://localhost:5000";
+
 /* ===========================
    GOOGLE OAUTH
 =========================== */
@@ -12,12 +15,13 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/auth/google/callback",
+      callbackURL: `${BACKEND_URL}/api/auth/google/callback`,
     },
 
     async (accessToken, refreshToken, profile, done) => {
       console.log("Google Strategy Executed");
-console.log(profile.displayName);
+      console.log(profile.displayName);
+
       try {
         let user = await User.findOne({
           email: profile.emails[0].value,
@@ -50,7 +54,7 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/auth/github/callback",
+      callbackURL: `${BACKEND_URL}/api/auth/github/callback`,
       scope: ["user:email"],
     },
 
@@ -89,7 +93,6 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
-
     done(null, user);
   } catch (error) {
     done(error, null);
