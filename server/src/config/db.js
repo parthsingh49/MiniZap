@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   console.log("🔵 Starting MongoDB connection...");
+  console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
 
   try {
     const connection = await mongoose.connect(process.env.MONGO_URI);

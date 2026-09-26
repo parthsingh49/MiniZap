@@ -4,8 +4,9 @@ import authRoutes from "./routes/authroutes.js";
 import passport from "passport";
 import workflowRoutes from "./routes/workflowRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
+import connectDB from "./config/db.js";
 const app = express();
-
+await connectDB();
 
 app.use(
   cors({
