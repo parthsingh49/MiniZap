@@ -55,13 +55,13 @@ function Register() {
     }
   };
 
-  const googleLogin = () => {
-   `${import.meta.env.VITE_API_URL}/auth/google`
-  };
+ const googleLogin = () => {
+  window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+};
 
-  const githubLogin = () => {
-   `${import.meta.env.VITE_API_URL}/auth/github`
-  };
+const githubLogin = () => {
+  window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
+};
 
   return (
     <div className="min-h-screen bg-[#030712] flex items-center justify-center px-6 relative overflow-hidden">
