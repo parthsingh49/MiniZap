@@ -56,11 +56,11 @@ function Register() {
   };
 
   const googleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+   `${import.meta.env.VITE_API_URL}/auth/google`
   };
 
   const githubLogin = () => {
-    alert("GitHub OAuth coming soon!");
+   `${import.meta.env.VITE_API_URL}/auth/github`
   };
 
   return (
