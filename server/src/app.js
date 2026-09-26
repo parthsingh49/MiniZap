@@ -5,6 +5,7 @@ import passport from "passport";
 import workflowRoutes from "./routes/workflowRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import connectDB from "./config/db.js";
+import "./config/passport.js";
 const app = express();
 await connectDB();
 
